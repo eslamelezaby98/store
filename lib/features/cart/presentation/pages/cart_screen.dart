@@ -20,6 +20,13 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
+  double calculateTotalPrice(CartController cartProvider) {
+    return cartProvider.cartList.fold(
+      0.0,
+      (previousValue, cartItem) => previousValue + cartItem.product.price,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,67 +59,95 @@ class _CartScreenState extends State<CartScreen> {
           if (cartProvider.cartList.isEmpty) {
             return const Center(child: Text('No Cart available'));
           }
+          double totalPrice = calculateTotalPrice(cartProvider);
 
-          return GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-            ),
-            itemCount: cartProvider.cartList.length,
-            itemBuilder: (context, index) {
-              final cart = cartProvider.cartList[index];
-              return Card(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Wrap(
-                    children: [
-                      Center(
-                        child: CachedNetworkImage(
-                          height: 80,
-                          width: 100,
-                          imageUrl: cart.product.image,
-                          placeholder: (context, url) =>
-                              const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                        ),
+          return Column(
+            children: [
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                  ),
+                  itemCount: cartProvider.cartList.length,
+                  itemBuilder: (context, index) {
+                    final cart = cartProvider.cartList[index];
+
+                    return Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        side: const BorderSide(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      Text(
-                        cart.product.title,
-                        maxLines: 2,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "${cart.product.price}\$",
-                            style: const TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.w400,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Wrap(
+                          children: [
+                            Center(
+                              child: CachedNetworkImage(
+                                height: 80,
+                                width: 100,
+                                imageUrl: cart.product.image,
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ),
                             ),
-                          ),
-                          cartProvider.loading == cart.id
-                              ? const CircularProgressIndicator()
-                              : IconButton(
-                                  onPressed: () {
-                                    cartProvider.removeFromCart(cart.id);
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                            Text(
+                              cart.product.title,
+                              maxLines: 2,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${cart.product.price}\$",
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                        ],
+                                cartProvider.loading == cart.id
+                                    ? const CircularProgressIndicator()
+                                    : IconButton(
+                                        onPressed: () {
+                                          cartProvider.removeFromCart(cart.id);
+                                        },
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
+                    );
+                  },
+                ),
+              ),
+              InkWell(
+                onTap: () {},
+                child: Card(
+                  elevation: 0,
+                  color: Colors.green,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text(
+                        "Checkout $totalPrice \$",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              );
-            },
+              ),
+            ],
           );
         },
       ),
