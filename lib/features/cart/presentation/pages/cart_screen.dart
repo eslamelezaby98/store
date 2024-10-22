@@ -1,61 +1,47 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:store/features/cart/presentation/controller/cart_controller.dart';
-import 'package:store/features/cart/presentation/pages/cart_screen.dart';
 
-import '../controller/product_controller.dart';
+import '../controller/cart_controller.dart';
 
-class ProductScreen extends StatefulWidget {
-  const ProductScreen({super.key});
+class CartScreen extends StatefulWidget {
+  const CartScreen({super.key});
 
   @override
-  State<ProductScreen> createState() => _ProductScreenState();
+  State<CartScreen> createState() => _CartScreenState();
 }
 
-class _ProductScreenState extends State<ProductScreen> {
+class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProductController>(context, listen: false).getProduct();
+      Provider.of<CartController>(context, listen: false).getCart();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const CartScreen(),
-              ));
-            },
-            icon: const Icon(Icons.shopping_basket_outlined),
-          ),
-        ],
-      ),
-      body: Consumer<ProductController>(
-        builder: (context, productProvider, child) {
-          if (productProvider.loading) {
+      appBar: AppBar(title: const Text('Cart')),
+      body: Consumer<CartController>(
+        builder: (context, cartProvider, child) {
+          if (cartProvider.loading == 0) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (productProvider.errorMessage != null) {
+          if (cartProvider.errorMessage != null) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Error: ${productProvider.errorMessage}',
+                    'Error: ${cartProvider.errorMessage}',
                     style: const TextStyle(color: Colors.red, fontSize: 16),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () => productProvider.getProduct(),
+                    onPressed: () => cartProvider.getCart(),
                     child: const Text('Retry'),
                   ),
                 ],
@@ -63,17 +49,17 @@ class _ProductScreenState extends State<ProductScreen> {
             );
           }
 
-          if (productProvider.products.isEmpty) {
-            return const Center(child: Text('No products available'));
+          if (cartProvider.cartList.isEmpty) {
+            return const Center(child: Text('No Cart available'));
           }
 
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
             ),
-            itemCount: productProvider.products.length,
+            itemCount: cartProvider.cartList.length,
             itemBuilder: (context, index) {
-              final product = productProvider.products[index];
+              final cart = cartProvider.cartList[index];
               return Card(
                 elevation: 0,
                 shape: RoundedRectangleBorder(
@@ -88,7 +74,7 @@ class _ProductScreenState extends State<ProductScreen> {
                         child: CachedNetworkImage(
                           height: 80,
                           width: 100,
-                          imageUrl: product.image,
+                          imageUrl: cart.product.image,
                           placeholder: (context, url) =>
                               const CircularProgressIndicator(),
                           errorWidget: (context, url, error) =>
@@ -96,34 +82,30 @@ class _ProductScreenState extends State<ProductScreen> {
                         ),
                       ),
                       Text(
-                        product.title,
+                        cart.product.title,
                         maxLines: 2,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "${product.price}\$",
+                            "${cart.product.price}\$",
                             style: const TextStyle(
                               color: Colors.green,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
-                          Consumer<CartController>(
-                            builder: (context, value, child) {
-                              return value.loading == product.id
-                                  ? const CircularProgressIndicator()
-                                  : IconButton(
-                                      onPressed: () {
-                                        value.addToCart(product);
-                                      },
-                                      icon: const Icon(
-                                        Icons.shopping_cart,
-                                        color: Colors.black,
-                                      ),
-                                    );
-                            },
-                          ),
+                          cartProvider.loading == cart.id
+                              ? const CircularProgressIndicator()
+                              : IconButton(
+                                  onPressed: () {
+                                    cartProvider.removeFromCart(cart.id);
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                ),
                         ],
                       ),
                     ],

@@ -7,7 +7,6 @@ import '../model/product_model.dart';
 
 class LocalProducts {
   final CacheHelper cacheHelper;
-
   LocalProducts({required this.cacheHelper});
 
   var key = "productCache";
