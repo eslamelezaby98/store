@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:store/core/errors/expentions.dart';
 import 'package:store/features/checkout/data/repo/checkout_repo.dart';
 import 'package:store/features/checkout/presentation/pages/orders_screen.dart';
+import '../../../../core/toast/toast.dart';
 import '../../data/model/order_model.dart';
 
 class OrderController extends ChangeNotifier {
@@ -17,10 +18,15 @@ class OrderController extends ChangeNotifier {
       await checkoutRepoImp.addOrder(orderModel);
       notifyListeners();
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const OrdersScreen()),
+        MaterialPageRoute(
+          builder: (context) => const OrdersScreen(),
+        ),
       );
+      MyToast.show("Add to orders");
     } on CacheExeption catch (e) {
       errorMessage = e.toString();
+      MyToast.show(e.toString());
+
       notifyListeners();
     }
   }

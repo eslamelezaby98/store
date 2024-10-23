@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:store/core/toast/toast.dart';
 import 'package:store/features/cart/data/model/cart_model.dart';
 import 'package:store/features/cart/data/repo/cart_repo.dart';
 
@@ -33,11 +34,12 @@ class CartController extends ChangeNotifier {
       loading = product.id;
       notifyListeners();
       await cartRepoImpl.addToCart(product);
+      MyToast.show("Add to cart");
       loading = null;
       notifyListeners();
     } catch (e) {
       loading = null;
-      errorMessage = e.toString();
+      MyToast.show(e.toString());
       notifyListeners();
     }
   }
@@ -49,10 +51,11 @@ class CartController extends ChangeNotifier {
       await cartRepoImpl.removeFromCart(id);
       cartList.removeWhere((element) => element.id == id);
       loading = null;
+      MyToast.show("Remove from cart");
       notifyListeners();
     } catch (e) {
       loading = null;
-      errorMessage = e.toString();
+      MyToast.show(e.toString());
       notifyListeners();
     }
   }

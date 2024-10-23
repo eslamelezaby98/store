@@ -15,8 +15,8 @@ import 'package:store/features/product/data/sources/local_products.dart';
 import 'package:store/features/product/data/sources/remote_product.dart';
 import 'package:store/features/product/data/sources/search_products.dart';
 import 'core/databases/cache/cache_helper.dart';
+import 'features/home/presentation/pages/home_screen.dart';
 import 'features/product/presentation/controller/product_controller.dart';
-import 'features/product/presentation/pages/product_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
       ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: ProductScreen(),
+        home: HomeScreen(),
       ),
     );
   }
