@@ -50,75 +50,98 @@ class _ProductScreenState extends State<ProductScreen> {
               text: productProvider.errorMessage!,
             );
           }
-
+          var isSearch = productProvider.searchText.text.isNotEmpty;
+          var data = isSearch
+              ? productProvider.searchedList
+              : productProvider.products;
           if (productProvider.products.isEmpty) {
             return const Center(child: Text('No products available'));
           }
 
-          return GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-            ),
-            itemCount: productProvider.products.length,
-            itemBuilder: (context, index) {
-              final product = productProvider.products[index];
-              return Card(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Wrap(
-                    children: [
-                      Center(
-                        child: CachedNetworkImage(
-                          height: 80,
-                          width: 100,
-                          imageUrl: product.image,
-                          placeholder: (context, url) =>
-                              const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                        ),
-                      ),
-                      Text(
-                        product.title,
-                        maxLines: 2,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "${product.price}\$",
-                            style: const TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          Consumer<CartController>(
-                            builder: (context, value, child) {
-                              return value.loading == product.id
-                                  ? const CircularProgressIndicator()
-                                  : IconButton(
-                                      onPressed: () {
-                                        value.addToCart(product);
-                                      },
-                                      icon: const Icon(
-                                        Icons.shopping_cart,
-                                        color: Colors.black,
-                                      ),
-                                    );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: productProvider.searchText,
+                  onChanged: (value) {
+                    productProvider.searchProducts();
+                  },
+                  decoration: const InputDecoration(
+                    hintText: "Search",
+                    enabledBorder: OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder()
                   ),
                 ),
-              );
-            },
+              ),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                  ),
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    final product = data[index];
+                    return Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        side: const BorderSide(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Wrap(
+                          children: [
+                            Center(
+                              child: CachedNetworkImage(
+                                height: 80,
+                                width: 100,
+                                imageUrl: product.image,
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ),
+                            ),
+                            Text(
+                              product.title,
+                              maxLines: 2,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${product.price}\$",
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                Consumer<CartController>(
+                                  builder: (context, value, child) {
+                                    return value.loading == product.id
+                                        ? const CircularProgressIndicator()
+                                        : IconButton(
+                                            onPressed: () {
+                                              value.addToCart(product);
+                                            },
+                                            icon: const Icon(
+                                              Icons.shopping_cart,
+                                              color: Colors.black,
+                                            ),
+                                          );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),

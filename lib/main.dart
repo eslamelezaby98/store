@@ -13,6 +13,7 @@ import 'package:store/features/checkout/presentation/controller/order_controller
 import 'package:store/features/product/data/repo/product_repo.dart';
 import 'package:store/features/product/data/sources/local_products.dart';
 import 'package:store/features/product/data/sources/remote_product.dart';
+import 'package:store/features/product/data/sources/search_products.dart';
 import 'core/databases/cache/cache_helper.dart';
 import 'features/product/presentation/controller/product_controller.dart';
 import 'features/product/presentation/pages/product_screen.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
               remoteProducts:
                   RemoteProducts(apiConsumer: DioConsumer(dio: Dio())),
               localProducts: LocalProducts(cacheHelper: CacheHelper()),
+              searchProducts: SearchProduct(),
             ),
           ),
         ),
@@ -49,9 +51,10 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => OrderController(
-              checkoutRepoImp: CheckoutRepoImp(
-            localOrder: LocalOrder(cacheHelper: CacheHelper()),
-          ),),
+            checkoutRepoImp: CheckoutRepoImp(
+              localOrder: LocalOrder(cacheHelper: CacheHelper()),
+            ),
+          ),
         )
       ],
       child: const MaterialApp(

@@ -4,17 +4,20 @@ import 'package:store/core/errors/failure.dart';
 import 'package:store/features/product/data/model/product_model.dart';
 import 'package:store/features/product/data/sources/local_products.dart';
 import 'package:store/features/product/data/sources/remote_product.dart';
+import 'package:store/features/product/data/sources/search_products.dart';
 import 'package:store/features/product/domain/repo/product_repo.dart';
 
 class ProductRepoImp extends ProductRepo {
   final NetworkInfo networkInfo;
   final RemoteProducts remoteProducts;
   final LocalProducts localProducts;
+  final SearchProduct searchProducts;
 
   ProductRepoImp({
     required this.networkInfo,
     required this.remoteProducts,
     required this.localProducts,
+    required this.searchProducts,
   });
 
   @override
@@ -35,5 +38,10 @@ class ProductRepoImp extends ProductRepo {
         throw Failure(errMessage: e.errorMessage);
       }
     }
+  }
+
+  @override
+  List<ProductModel> searchProduct(List<ProductModel> value, String text) {
+    return searchProducts.getSearchedProducts(value, text);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:store/features/product/domain/repo/product_repo.dart';
 
 import '../../data/model/product_model.dart';
@@ -10,6 +11,9 @@ class ProductController extends ChangeNotifier {
   bool loading = false;
   String? errorMessage;
   List<ProductModel> products = [];
+  List<ProductModel> searchedList = [];
+
+  TextEditingController searchText = TextEditingController();
 
   Future getProduct() async {
     loading = true;
@@ -25,5 +29,11 @@ class ProductController extends ChangeNotifier {
       errorMessage = e.toString();
       notifyListeners();
     }
+  }
+
+  searchProducts() {
+    var productList = productRepo.searchProduct(products, searchText.text);
+    searchedList = productList;
+    notifyListeners();
   }
 }
