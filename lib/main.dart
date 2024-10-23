@@ -7,6 +7,9 @@ import 'package:store/core/databases/api/dio_consumer.dart';
 import 'package:store/features/cart/data/repo/cart_repo.dart';
 import 'package:store/features/cart/data/sources/local_cart.dart';
 import 'package:store/features/cart/presentation/controller/cart_controller.dart';
+import 'package:store/features/checkout/data/repo/checkout_repo.dart';
+import 'package:store/features/checkout/data/sources/local_order.dart';
+import 'package:store/features/checkout/presentation/controller/order_controller.dart';
 import 'package:store/features/product/data/repo/product_repo.dart';
 import 'package:store/features/product/data/sources/local_products.dart';
 import 'package:store/features/product/data/sources/remote_product.dart';
@@ -43,6 +46,12 @@ class MyApp extends StatelessWidget {
               localCart: LocalCart(cacheHelper: CacheHelper()),
             ),
           ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => OrderController(
+              checkoutRepoImp: CheckoutRepoImp(
+            localOrder: LocalOrder(cacheHelper: CacheHelper()),
+          ),),
         )
       ],
       child: const MaterialApp(

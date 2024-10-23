@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:store/features/cart/presentation/controller/cart_controller.dart';
 import 'package:store/features/cart/presentation/pages/cart_screen.dart';
-
+import '../../../../core/widget/error/error_widget.dart';
 import '../controller/product_controller.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -45,21 +45,9 @@ class _ProductScreenState extends State<ProductScreen> {
           }
 
           if (productProvider.errorMessage != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Error: ${productProvider.errorMessage}',
-                    style: const TextStyle(color: Colors.red, fontSize: 16),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () => productProvider.getProduct(),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
+            return ErrorText(
+              onTap: productProvider.getProduct,
+              text: productProvider.errorMessage!,
             );
           }
 

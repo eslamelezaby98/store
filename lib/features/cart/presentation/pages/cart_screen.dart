@@ -1,7 +1,12 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:store/features/checkout/data/model/order_model.dart';
+import 'package:store/features/checkout/presentation/controller/order_controller.dart';
 
+import '../../../../core/widget/error/error_widget.dart';
 import '../controller/cart_controller.dart';
 
 class CartScreen extends StatefulWidget {
@@ -29,6 +34,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var orderController = Provider.of<OrderController>(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Cart')),
       body: Consumer<CartController>(
@@ -38,21 +44,9 @@ class _CartScreenState extends State<CartScreen> {
           }
 
           if (cartProvider.errorMessage != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Error: ${cartProvider.errorMessage}',
-                    style: const TextStyle(color: Colors.red, fontSize: 16),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () => cartProvider.getCart(),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
+            return ErrorText(
+              onTap: cartProvider.getCart,
+              text: cartProvider.errorMessage!,
             );
           }
 
@@ -111,7 +105,37 @@ class _CartScreenState extends State<CartScreen> {
                                     ? const CircularProgressIndicator()
                                     : IconButton(
                                         onPressed: () {
-                                          cartProvider.removeFromCart(cart.id);
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: const Text(
+                                                  "You will delete this product!",
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {},
+                                                    child: const Text("Cancel"),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      cartProvider
+                                                          .removeFromCart(
+                                                        cart.id,
+                                                      );
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text(
+                                                      "Delete",
+                                                      style: TextStyle(
+                                                        color: Colors.red,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
                                         },
                                         icon: const Icon(
                                           Icons.delete,
@@ -128,7 +152,17 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  orderController.addOrder(
+                    OrderModel(
+                      id: Random().nextInt(100),
+                      cartModels: cartProvider.cartList,
+                      status: "pending",
+                      total: totalPrice,
+                    ),
+                    context,
+                  );
+                },
                 child: Card(
                   elevation: 0,
                   color: Colors.green,
