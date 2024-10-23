@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:store/core/widget/error/error_widget.dart';
 import 'package:store/features/checkout/presentation/controller/order_controller.dart';
-import 'package:store/features/checkout/presentation/view/widgets/order_cell.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -47,7 +46,25 @@ class _OrdersScreenState extends State<OrdersScreen> {
             itemCount: orderProvider.orders.length,
             itemBuilder: (context, index) {
               final order = orderProvider.orders[index];
-              return OrderCell(order: order);
+              return Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  side: const BorderSide(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Id : ${order.id}"),
+                      Text("Items : ${order.cartModels.length}"),
+                      Text("Total : ${order.total}"),
+                      Text("Status : ${order.status}"),
+                    ],
+                  ),
+                ),
+              );
             },
           );
         },

@@ -41,6 +41,8 @@ dependencies:
   provider: ^6.1.2
   cached_network_image: ^3.4.0
   fluttertoast: ^8.2.8
+  mockito: ^5.0.17
+  
 
 dev_dependencies:
   flutter_test:
